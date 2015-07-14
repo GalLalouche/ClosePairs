@@ -2,22 +2,25 @@
 " closepairs.vim - Auto closes pairs of characters
 "==============================================================================
 "
-" Author:   NoWhereMan (Edoardo Vacchi) <uncommonnonsense at gmail dot com>
+" Author:   Gal Lalouche
+"	OriginalAuthor:  NoWhereMan (Edoardo Vacchi) <uncommonnonsense at gmail dot com>
 " Version:  0.1
-" URL: 	    http://www.flatpress.org/ 
 " License:  Public Domain
 "==============================================================================
 
 
-inoremap ( ()<left>
-inoremap { {}<left>
-inoremap [ []<left>
+inoremap <expr> ( <SID>insertpair('(', ')')
+inoremap <expr> [ <SID>insertpair('[', ']')
+inoremap <expr> { <SID>insertpair('{', '}')
+inoremap <expr> " <SID>insertpair('"', '"')
+inoremap <expr> ' <SID>insertpair("'", "'")
+inoremap <expr> < <SID>insertpair("<", ">")
 
-vnoremap <leader>" "zdi"<c-r>z"
-vnoremap <leader>' "zdi'<c-r>z'
-vnoremap <leader>( "zdi(<c-r>z)
-vnoremap <leader>[ "zdi[<c-r>z]
-vnoremap <leader>{ "zdi{<c-r>z}
+" Not needed anymore since vim-surround
+" vnoremap <leader>" "zdi"<c-r>z"
+" vnoremap <leader>( "zdi(<c-r>z)
+" vnoremap <leader>[ "zdi[<c-r>z]
+" vnoremap <leader>{ "zdi{<c-r>z}
 
 inoremap <expr> <bs> <SID>delpair()
 
@@ -25,12 +28,17 @@ inoremap <expr> ) <SID>escapepair(')')
 inoremap <expr> } <SID>escapepair('}')
 inoremap <expr> ] <SID>escapepair(']')
 
-inoremap <expr> " <SID>pairquotes('"')
-inoremap <expr> ' <SID>pairquotes("'")
 
+function! s:insertpair(a, b)
+	let l:chr = getline('.')[col('.') - 1]
+	if ' ' == l:chr || '' == l:chr
+		return a:a.a:b."\<left>"
+	else
+		return a:a
+endf
 
 function! s:delpair()
-	let l:lst = ['""',"''",'{}','[]','()']
+	let l:lst = ['""',"'",'{}','[]','()', '<>']
 	let l:col = col('.')
 	let l:line = getline('.')
 	let l:chr = l:line[l:col-2 : l:col-1]
